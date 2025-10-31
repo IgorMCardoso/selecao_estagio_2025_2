@@ -76,8 +76,36 @@
                 // Evento de submit do formulário
                 form.addEventListener('submit', (e) => {
                     e.preventDefault();
+
+                    // Constantes que vão armazenar as informações do formulário
+                    const nome = form.name.value.trim();
+                    const descricao = form.description.value.trim();
+
                     // Adiciona marcador no mapa
-                    L.marker([lat, lng]).addTo(map);
+                    const marcador = L.marker([lat, lng]).addTo(map);
+
+                    // Armazena as informações dentro do marcador
+                    marcador.dados = {
+                        nome,
+                        descricao,
+                        coordenadas: [lat, lng]
+                    }
+
+                    // Evento que acontece quando clicar no marcador
+                    marcador.on('click', () => {
+                        const informacoes = `
+                            <b>Nome: ${marcador.dados.nome}</b>
+                            <br>Descrição: ${marcador.dados.descricao}</br>
+                            <small>Coordenadas: ${marcador.dados.coordenadas.join(', ')}</small>
+                        `;
+                        marcador.bindPopup(informacoes).openPopup();
+
+                    // Permite que abra o popup depois que ele fecha
+                    marcador.on('click', () => {
+                    marcador.openPopup();
+                        });
+                    });
+
                     // Fecha popup e desativa modo de adição
                     map.closePopup();
                     adding = false;
